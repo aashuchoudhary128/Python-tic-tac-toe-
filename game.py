@@ -1,64 +1,49 @@
-def print_board(board):
-    print("Current Board:")
-    for row in board:
-        print(" | ".join(row))
-        print("-" * 9)
+board = [" " for _ in range(9)]
 
-def check_winner(board, player):
-    for row in board:
-        if all(s == player for s in row):
+def print_board():
+    print()
+    print(board[0], "|", board[1], "|", board[2])
+    print("---------")
+    print(board[3], "|", board[4], "|", board[5])
+    print("---------")
+    print(board[6], "|", board[7], "|", board[8])
+    print()
+
+def check_winner(player):
+    win_positions = [
+        [0, 1, 2], [3, 4, 5], [6, 7, 8],
+        [0, 3, 6], [1, 4, 7], [2, 5, 8],
+        [0, 4, 8], [2, 4, 6]
+    ]
+
+    for pos in win_positions:
+        if board[pos[0]] == board[pos[1]] == board[pos[2]] == player:
             return True
-
-    for col in range(3):
-        if all(board[row][col] == player for row in range(3)):
-            return True
-
-    if all(board[i][i] == player for i in range(3)):
-        return True
-    if all(board[i][2 - i] == player for i in range(3)):
-        return True
     return False
 
-def is_board_full(board):
-    return all(all(cell != " " for cell in row) for row in board)
+player = "X"
 
-def get_player_move(player):
-    while True:
-        try:
-            move = int(input(f"Player {player}, enter your move (1-9): "))
-            if move < 1 or move > 9:
-                print("Invalid move. Please enter a number between 1 and 9.")
-                continue
-            row = (move - 1) // 3
-            col = (move - 1) % 3
-            return row, col
-        except ValueError:
-            print("Invalid input. Please enter a number between 1 and 9.")
+for turn in range(9):
+    print_board()
 
-def main():
-    board = [[" " for _ in range(3)] for _ in range(3)]
-    current_player = "X"
-    while True:
-        print_board(board)
-        row, col = get_player_move(current_player)
+    move = int(input(f"Player {player}, choose (1-9): ")) - 1
 
-        if board[row][col] != " ":
-            print("Cell already occupied. Choose another one.")
-            continue
+    if board[move] != " ":
+        print("Already filled! Try again.")
+        continue
 
-        board[row][col] = current_player
+    board[move] = player
 
-        if check_winner(board, current_player):
-            print_board(board)
-            print(f"Player {current_player} wins!")
-            break
+    if check_winner(player):
+        print_board()
+        print(f"Player {player} wins!")
+        break
 
-        if is_board_full(board):
-            print_board(board)
-            print("It's a tie!")
-            break
+    if player == "X":
+        player = "O"
+    else:
+        player = "X"
 
-        current_player = "O" if current_player == "X" else "X"
-
-if __name__ == "__main__":
-    main()
+else:
+    print_board()
+    print("It's a draw!")
